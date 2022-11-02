@@ -3,11 +3,13 @@
     <div id="map" ref="map" class="cell"></div>
     <div id="main" ref="main" class="cell"></div>
     <div id="sankey" ref="sankey" class="cell"></div>
+    <div id="polyline" ref="polyline" class="cell"></div>
   </div>
 </template>
 
 <script>
 require("../assets/china.json");
+require("../assets/vintage.js");
 
 let color = [
   "#344b5c",
@@ -23,16 +25,20 @@ export default {
   name: "chart",
   methods: {
     drawChart() {
-      let myChart = this.$echarts.init(this.$refs.main);
+      let myChart = this.$echarts.init(this.$refs.main, 'vintage');
       let option = {
-        color: color,
         title: {
           text: "堆叠柱状图",
           textStyle: {
-            color: "#44cc8c",
           },
         },
-        legend: {},
+        grid: {
+          y: 60,
+          y2: 30,
+        },
+        legend: {
+          y: 30,
+        },
         tooltip: {},
         dataset: {
           // 提供一份数据。
@@ -70,20 +76,16 @@ export default {
         ],
       };
       myChart.setOption(option);
-      window.addEventListener("resize", () => {
-        myChart.resize();
-      });
+      window.addEventListener("resize", () => myChart.resize());
     },
     drawChart2() {
-      let myChart = this.$echarts.init(this.$refs.sankey);
+      let myChart = this.$echarts.init(this.$refs.sankey,'vintage');
       let option = {
         title: {
           text: "桑基图",
           textStyle: {
-            color: "#44cc8c",
           },
         },
-        color: color,
         tooltip: {
           trigger: "item",
           triggerOn: "mousemove",
@@ -124,14 +126,10 @@ export default {
         ],
       };
       myChart.setOption(option);
-      window.addEventListener("resize", () => {
-        myChart.resize();
-      });
+      window.addEventListener("resize", () => myChart.resize());
     },
     drawChart3() {
-      let myChartContainer = this.$refs.map;
-
-      let myChart = this.$echarts.init(myChartContainer);
+      let myChart = this.$echarts.init(this.$refs.map, 'vintage');
 
       function randomData() {
         return Math.round(Math.random() * 500);
@@ -142,7 +140,6 @@ export default {
         title: {
           text: "地图",
           textStyle: {
-            color: "#44cc8c",
           },
         },
         tooltip: {
@@ -156,7 +153,7 @@ export default {
           top: "bottom",
           text: ["高", "低"], //取值范围的文字
           inRange: {
-            color: ["#44cc8c", "#344b5c"], //取值范围的颜色
+            color: ["#f4e9a3", "#c0464d"], //取值范围的颜色
           },
           show: true, //图注
         },
@@ -165,12 +162,10 @@ export default {
           {
             name: "数据",
             type: "map",
-            mapType: "china",
+            map: "china",
             roam: false,
             label: {
-              normal: {
-                show: false, //省份名称
-              },
+              show: false, //省份名称
             },
             emphasis: {
               show: false,
@@ -252,15 +247,113 @@ export default {
         ],
       };
       myChart.setOption(optionMap);
-      window.onresize = function () {
-        myChart.resize();
+      window.addEventListener("resize", () => myChart.resize());
+    },
+    drawChart4() {
+      let myChart = this.$echarts.init(this.$refs.polyline,'vintage');
+      let option = {
+        title: {
+          text: "堆叠折线图",
+          textStyle: {
+          },
+        },
+        tooltip: {
+          trigger: "axis",
+          axisPointer: {
+            type: "cross",
+            label: {
+              backgroundColor: "#6a7985",
+            },
+          },
+        },
+        legend: {
+          y: 30,
+          data: ["Email", "Union Ads", "Video Ads", "Direct", "Search Engine"],
+        },
+        grid: {
+          left: "3%",
+          right: "4%",
+          bottom: "3%",
+          containLabel: true,
+        },
+        xAxis: [
+          {
+            type: "category",
+            boundaryGap: false,
+            data: ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"],
+          },
+        ],
+        yAxis: [
+          {
+            type: "value",
+          },
+        ],
+        series: [
+          {
+            name: "Email",
+            type: "line",
+            stack: "Total",
+            areaStyle: {},
+            emphasis: {
+              focus: "series",
+            },
+            data: [120, 132, 101, 134, 90, 230, 210],
+          },
+          {
+            name: "Union Ads",
+            type: "line",
+            stack: "Total",
+            areaStyle: {},
+            emphasis: {
+              focus: "series",
+            },
+            data: [220, 182, 191, 234, 290, 330, 310],
+          },
+          {
+            name: "Video Ads",
+            type: "line",
+            stack: "Total",
+            areaStyle: {},
+            emphasis: {
+              focus: "series",
+            },
+            data: [150, 232, 201, 154, 190, 330, 410],
+          },
+          {
+            name: "Direct",
+            type: "line",
+            stack: "Total",
+            areaStyle: {},
+            emphasis: {
+              focus: "series",
+            },
+            data: [320, 332, 301, 334, 390, 330, 320],
+          },
+          {
+            name: "Search Engine",
+            type: "line",
+            stack: "Total",
+            label: {
+              show: true,
+              position: "top",
+            },
+            areaStyle: {},
+            emphasis: {
+              focus: "series",
+            },
+            data: [820, 932, 901, 934, 1290, 1330, 1320],
+          },
+        ],
       };
+      myChart.setOption(option);
+      window.addEventListener("resize", () => myChart.resize());
     },
   },
   mounted() {
     this.drawChart();
     this.drawChart2();
     this.drawChart3();
+    this.drawChart4();
   },
 };
 </script>
@@ -268,31 +361,43 @@ export default {
 <style scoped>
 #wrapper {
   display: grid;
-  grid-template-rows: 70vh 30vh;
-  grid-template-columns: repeat(4, 1fr);
-  grid-gap: .5em;
+  grid-template-rows: 70vh 27vh;
+  grid-template-columns: repeat(3, 1fr);
+  grid-gap: 0.5em;
 }
 
-
 #map {
-  grid-column: 1/5;
+  grid-row: 1/2;
+  grid-column: 1/3;
   height: auto;
 }
 
 #main {
   width: 100%;
   height: auto;
+  grid-row: 2/3;
+  grid-column: 1/2;
   margin: 0;
 }
 
 #sankey {
+  grid-row: 1/3;
+  grid-column: 3/4;
+  width: 100%;
+  height: auto;
+  margin: 0;
+}
+
+#polyline {
+  grid-row: 2/3;
+  grid-column: 2/3;
   width: 100%;
   height: auto;
   margin: 0;
 }
 
 .cell {
-  border: 1px solid #44cc8d2b;
+  border: 1px solid #fcd59a;
   border-radius: 5px;
 }
 </style>
