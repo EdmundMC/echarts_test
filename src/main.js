@@ -2,9 +2,9 @@ import Vue from 'vue'
 import App from './App.vue'
 import router from './router/index.js'
 import * as echarts from 'echarts'
-import china from './assets/china.json'
+import world from './assets/world.json'
 
-echarts.registerMap('china', china);
+echarts.registerMap('world', world);
 Vue.prototype.$echarts = echarts;
 Vue.config.productionTip = false
 

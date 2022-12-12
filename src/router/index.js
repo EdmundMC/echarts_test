@@ -3,27 +3,19 @@ import Router from 'vue-router'
 
 Vue.use(Router)
 
-const routes = [{
-    path: '/',
-    component: () => import('../components/mainMenu.vue'),
-    children: [{
-        path: 'test',
-        component: () => import('../components/test.vue')
+const routes = [
+    {
+        path: '/chart1',
+        component: () => import('../components/chart1.vue')
     },
     {
-        path: 'child',
-        component: () => import('../components/subcomponent/child.vue')
+        path: '/chart2',
+        component: () => import('../components/chart2.vue')
     },
     {
-        path: 'chart',
-        component: () => import('../components/chart.vue')
+        path: '*',
+        redirect: '/chart1'
     }
-    ]
-},
-{
-    path: '*',
-    redirect: '/'
-}
 ]
 
 const router = new Router({
