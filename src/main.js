@@ -6,6 +6,7 @@ import world from './assets/world.json'
 
 echarts.registerMap('world', world);
 Vue.prototype.$echarts = echarts;
+require('echarts-wordcloud');
 Vue.config.productionTip = false
 
 new Vue({

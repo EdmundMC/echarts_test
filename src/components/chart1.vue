@@ -7,7 +7,14 @@
     <div id="main" ref="main" class="cell"></div>
     <div id="sankey" ref="sankey" class="cell"></div>
     <div id="sankey2" ref="sankey2" class="cell"></div>
-    <div id="polyline" ref="polyline" class="cell"></div>
+    <div id="polyline" ref="polyline" class="cell">
+      <div id="ciyun">词云</div>
+      <img src="../assets/p0.jpg" v-show="this.date == 0" />
+      <img src="../assets/p1.jpg" v-show="this.date == 1" />
+      <img src="../assets/p2.jpg" v-show="this.date == 2" />
+      <img src="../assets/p3.jpg" v-show="this.date == 3" />
+      <img src="../assets/p4.jpg" v-show="this.date == 4" />
+    </div>
   </div>
 </template>
 
@@ -19,6 +26,74 @@ export default {
   name: "chart",
   data() {
     return {
+      date: 0,
+      heatList: [
+        {
+          俄罗斯: 406,
+          乌克兰: 27,
+          美国: 236,
+          中国: 120,
+          意大利: 40,
+          日本: 119,
+          德国: 30,
+          法国: 76,
+          瑞典: 329,
+          印度尼西亚: 57,
+          希腊: 20,
+        },
+        {
+          俄罗斯: 531,
+          乌克兰: 25,
+          美国: 213,
+          中国: 232,
+          意大利: 14,
+          日本: 184,
+          德国: 136,
+          法国: 158,
+          瑞典: 211,
+          印度尼西亚: 40,
+          希腊: 17,
+        },
+        {
+          俄罗斯: 190,
+          乌克兰: 831,
+          美国: 45,
+          中国: 214,
+          意大利: 22,
+          日本: 136,
+          德国: 136,
+          法国: 61,
+          瑞典: 89,
+          印度尼西亚: 214,
+          希腊: 231,
+        },
+        {
+          俄罗斯: 320,
+          乌克兰: 910,
+          美国: 912,
+          中国: 174,
+          意大利: 510,
+          日本: 636,
+          德国: 331,
+          法国: 142,
+          瑞典: 34,
+          印度尼西亚: 62,
+          希腊: 22,
+        },
+        {
+          俄罗斯: 27,
+          乌克兰: 1000,
+          美国: 166,
+          中国: 134,
+          意大利: 751,
+          日本: 185,
+          德国: 175,
+          法国: 90,
+          瑞典: 35,
+          印度尼西亚: 53,
+          希腊: 48,
+        },
+      ],
       dataList: [
         {
           name: "阿富汗",
@@ -1281,6 +1356,13 @@ export default {
         [20, 17, 231, 22, 48],
       ],
       mainData: [
+        [95.1, 4.9, 45, 55],
+        [82.5, 17.5, 37.9, 62.1],
+        [85.1, 14.9, 37.5, 62.5],
+        [81.7, 18.3, 39.4, 60.6],
+        [33, 67, 24.3, 75.7],
+      ],
+      stackMainData: [
         [45, 37.9, 37.5, 39.4, 24.3],
         [55, 62.1, 62.5, 60.6, 75.7],
         [95.1, 82.5, 85.1, 81.7, 33],
@@ -1310,16 +1392,35 @@ export default {
           itemWidth: 10,
           itemHeight: 10,
         },
-        tooltip: {},
+        tooltip: {
+          formatter: function (params, callback) {
+            return (
+              callback.split("_")[1] +
+              "<br />" +
+              "支持率" +
+              "：" +
+              params.value +
+              "%"
+            );
+          },
+        },
         // 声明一个 X 轴，类目轴（category）。默认情况下，类目轴对应到 dataset 第一列。
         xAxis: {
           type: "category",
-          data: ["1", "2", "3", "4", "5"],
+          data: [
+            "2022/2/22",
+            "2022/4/7",
+            "2022/5/21",
+            "2022/9/5",
+            "2022/10/23",
+          ],
           axisTick: {
-            show: false,
+            interval: 0,
+            show: true,
           },
           axisLabel: {
-            show: false,
+            interval: 0,
+            show: true,
           },
         },
         // 声明一个 Y 轴，数值轴。
@@ -1331,25 +1432,25 @@ export default {
             name: "支持俄罗斯[油管]",
             type: "bar",
             stack: "x",
-            data: this.mainData[0],
+            data: this.stackMainData[0],
           },
           {
             name: "支持乌克兰[油管]",
             type: "bar",
             stack: "x",
-            data: this.mainData[1],
+            data: this.stackMainData[1],
           },
           {
             name: "支持俄罗斯[b站]",
             type: "bar",
             stack: "x",
-            data: this.mainData[2],
+            data: this.stackMainData[2],
           },
           {
             name: "支持乌克兰[b站]",
             type: "bar",
             stack: "x",
-            data: this.mainData[3],
+            data: this.stackMainData[3],
           },
         ],
       };
@@ -1357,6 +1458,7 @@ export default {
       window.addEventListener("resize", () => myChart.resize());
     },
     drawChart2() {
+      const _this = this;
       let myChart = this.$echarts.init(this.$refs.sankey, "vintage");
       let option = {
         title: {
@@ -1385,10 +1487,26 @@ export default {
               { name: "支持乌克兰" },
             ],
             links: [
-              { source: "b站", target: "支持俄罗斯", value: 95.1 },
-              { source: "b站", target: "支持乌克兰", value: 4.9 },
-              { source: "油管", target: "支持俄罗斯", value: 45 },
-              { source: "油管", target: "支持乌克兰", value: 55 },
+              {
+                source: "b站",
+                target: "支持俄罗斯",
+                value: _this.mainData[_this.date][0],
+              },
+              {
+                source: "b站",
+                target: "支持乌克兰",
+                value: _this.mainData[_this.date][1],
+              },
+              {
+                source: "油管",
+                target: "支持俄罗斯",
+                value: _this.mainData[_this.date][2],
+              },
+              {
+                source: "油管",
+                target: "支持乌克兰",
+                value: _this.mainData[_this.date][3],
+              },
             ],
             orient: "vertical",
             label: {
@@ -1408,7 +1526,7 @@ export default {
       let myChart = this.$echarts.init(this.$refs.map, "vintage");
 
       //绘制图表
-
+      const _this = this;
       let option = {
         title: {
           text: "热度世界地图",
@@ -1434,7 +1552,7 @@ export default {
         },
         geo: {
           map: "world", //引入地图数据
-          roam: false, //不开启缩放和平移
+          roam: true, //开启缩放和平移
           zoom: 1, //视角缩放比例
           label: {
             show: false,
@@ -1682,6 +1800,27 @@ export default {
         ],
       };
       myChart.setOption(option);
+      let countries = [
+        "美国",
+        "中国",
+        "德国",
+        "法国",
+        "意大利",
+        "印度尼西亚",
+        "日本",
+        "瑞典",
+        "希腊",
+        "俄罗斯",
+        "乌克兰",
+      ];
+      myChart.on("click", function (params) {
+        if (countries.indexOf(params.name) != -1) {
+          _this.$router.push({
+            path: "/chart2",
+            query: { province: params.name },
+          });
+        }
+      });
       window.addEventListener("resize", () => myChart.resize());
     },
     drawChart4() {
@@ -1882,37 +2021,57 @@ export default {
               {
                 source: "总热度",
                 target: "俄",
-                value: this.stackData[0][0],
+                value: this.stackData[0][this.date],
               },
               {
                 source: "总热度",
                 target: "乌",
-                value: this.stackData[1][0],
+                value: this.stackData[1][this.date],
               },
               {
                 source: "总热度",
                 target: "美/英/澳",
-                value: this.stackData[2][0],
+                value: this.stackData[2][this.date],
               },
-              { source: "总热度", target: "中", value: this.stackData[3][0] },
+              {
+                source: "总热度",
+                target: "中",
+                value: this.stackData[3][this.date],
+              },
               {
                 source: "总热度",
                 target: "意",
-                value: this.stackData[4][0],
+                value: this.stackData[4][this.date],
               },
-              { source: "总热度", target: "日", value: this.stackData[5][0] },
-              { source: "总热度", target: "德", value: this.stackData[6][0] },
-              { source: "总热度", target: "法", value: this.stackData[7][0] },
-              { source: "总热度", target: "瑞典", value: this.stackData[8][0] },
+              {
+                source: "总热度",
+                target: "日",
+                value: this.stackData[5][this.date],
+              },
+              {
+                source: "总热度",
+                target: "德",
+                value: this.stackData[6][this.date],
+              },
+              {
+                source: "总热度",
+                target: "法",
+                value: this.stackData[7][this.date],
+              },
+              {
+                source: "总热度",
+                target: "瑞典",
+                value: this.stackData[8][this.date],
+              },
               {
                 source: "总热度",
                 target: "印尼",
-                value: this.stackData[9][0],
+                value: this.stackData[9][this.date],
               },
               {
                 source: "总热度",
                 target: "希腊",
-                value: this.stackData[10][0],
+                value: this.stackData[10][this.date],
               },
             ],
             orient: "vertical",
@@ -1930,15 +2089,16 @@ export default {
       window.addEventListener("resize", () => myChart.resize());
     },
     drawChart6() {
+      const _this = this;
       let myChart = this.$echarts.init(this.$refs.timeline, "vintage");
       let option = {
         baseOption: {
           timeline: {
             axisType: "category",
-            // loop: false,
+            loop: true,
             autoPlay: false,
             currentIndex: 0,
-            playInterval: 20 * 1000,
+            playInterval: 5000,
             left: "10%",
             right: 0,
             top: 2,
@@ -1963,7 +2123,7 @@ export default {
               borderColor: "rgba(233,219,154, 0.2)",
             },
             controlStyle: {
-              color:"#D49576",
+              color: "#D49576",
               borderColor: "#D49576",
               itemSize: 18,
               itemGap: 30,
@@ -1978,22 +2138,129 @@ export default {
                 color: "#F3E7A2",
               },
               controlStyle: {
-                color:"#F3E7A2",
+                color: "#F3E7A2",
                 borderColor: "#F3E7A2",
               },
             },
-            progress:{
+            progress: {
               itemStyle: {
                 color: "#C1484E",
               },
-              lineStyle:{
+              lineStyle: {
                 color: "#C1484E",
               },
-            }
+            },
           },
         },
         calculable: true,
       };
+      myChart.on("click", function (params) {
+        _this.date = params.data;
+        var tmpList = _this.dataList;
+
+        console.log(tmpList.length);
+
+        for (let i = 0, len = tmpList.length; i < len; i++) {
+          if (tmpList[i].name == "美国") {
+            tmpList[i].value = _this.heatList[params.data]["美国"];
+          }
+          if (tmpList[i].name == "乌克兰") {
+            tmpList[i].value = _this.heatList[params.data]["乌克兰"];
+          }
+          if (tmpList[i].name == "俄罗斯") {
+            tmpList[i].value = _this.heatList[params.data]["俄罗斯"];
+          }
+          if (tmpList[i].name == "意大利") {
+            tmpList[i].value = _this.heatList[params.data]["意大利"];
+          }
+          if (tmpList[i].name == "中国") {
+            tmpList[i].value = _this.heatList[params.data]["中国"];
+          }
+          if (tmpList[i].name == "日本") {
+            tmpList[i].value = _this.heatList[params.data]["日本"];
+          }
+          if (tmpList[i].name == "德国") {
+            tmpList[i].value = _this.heatList[params.data]["德国"];
+          }
+          if (tmpList[i].name == "法国") {
+            tmpList[i].value = _this.heatList[params.data]["法国"];
+          }
+          if (tmpList[i].name == "瑞典") {
+            tmpList[i].value = _this.heatList[params.data]["瑞典"];
+          }
+          if (tmpList[i].name == "印度尼西亚") {
+            tmpList[i].value = _this.heatList[params.data]["印度尼西亚"];
+          }
+          if (tmpList[i].name == "希腊") {
+            tmpList[i].value = _this.heatList[params.data]["希腊"];
+          }
+          if (tmpList[i].name == "英国") {
+            tmpList[i].value = _this.heatList[params.data]["美国"];
+          }
+          if (tmpList[i].name == "澳大利亚") {
+            tmpList[i].value = _this.heatList[params.data]["美国"];
+          }
+        }
+
+        _this.dataList = tmpList;
+        _this.drawChart3();
+        _this.drawChart2();
+        _this.drawChart5();
+      });
+      myChart.on("timelinechanged", function (params) {
+        _this.date = params.currentIndex;
+        var tmpList = _this.dataList;
+
+        console.log(params);
+
+        for (let i = 0, len = tmpList.length; i < len; i++) {
+          if (tmpList[i].name == "美国") {
+            tmpList[i].value = _this.heatList[params.currentIndex]["美国"];
+          }
+          if (tmpList[i].name == "乌克兰") {
+            tmpList[i].value = _this.heatList[params.currentIndex]["乌克兰"];
+          }
+          if (tmpList[i].name == "俄罗斯") {
+            tmpList[i].value = _this.heatList[params.currentIndex]["俄罗斯"];
+          }
+          if (tmpList[i].name == "意大利") {
+            tmpList[i].value = _this.heatList[params.currentIndex]["意大利"];
+          }
+          if (tmpList[i].name == "中国") {
+            tmpList[i].value = _this.heatList[params.currentIndex]["中国"];
+          }
+          if (tmpList[i].name == "日本") {
+            tmpList[i].value = _this.heatList[params.currentIndex]["日本"];
+          }
+          if (tmpList[i].name == "德国") {
+            tmpList[i].value = _this.heatList[params.currentIndex]["德国"];
+          }
+          if (tmpList[i].name == "法国") {
+            tmpList[i].value = _this.heatList[params.currentIndex]["法国"];
+          }
+          if (tmpList[i].name == "瑞典") {
+            tmpList[i].value = _this.heatList[params.currentIndex]["瑞典"];
+          }
+          if (tmpList[i].name == "印度尼西亚") {
+            tmpList[i].value =
+              _this.heatList[params.currentIndex]["印度尼西亚"];
+          }
+          if (tmpList[i].name == "希腊") {
+            tmpList[i].value = _this.heatList[params.currentIndex]["希腊"];
+          }
+          if (tmpList[i].name == "英国") {
+            tmpList[i].value = _this.heatList[params.currentIndex]["美国"];
+          }
+          if (tmpList[i].name == "澳大利亚") {
+            tmpList[i].value = _this.heatList[params.currentIndex]["美国"];
+          }
+        }
+
+        _this.dataList = tmpList;
+        _this.drawChart3();
+        _this.drawChart2();
+        _this.drawChart5();
+      });
       myChart.setOption(option);
       window.addEventListener("resize", () => myChart.resize());
     },
@@ -2002,7 +2269,6 @@ export default {
     this.drawChart();
     this.drawChart2();
     this.drawChart3();
-    this.drawChart4();
     this.drawChart5();
     this.drawChart6();
   },
@@ -2024,7 +2290,7 @@ export default {
 }
 
 #map {
-  width: 100%;
+  width: 99%;
   height: 90%;
 }
 
@@ -2068,5 +2334,18 @@ export default {
 .cell {
   border: 1px solid #fcd59a;
   border-radius: 5px;
+}
+
+img {
+  height: 95%;
+}
+
+#ciyun {
+  font-weight: 600;
+  font-size: large;
+  text-align: left;
+  width: 80%;
+  height: 1%;
+  margin-left: 2%;
 }
 </style>
